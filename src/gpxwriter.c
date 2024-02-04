@@ -38,12 +38,18 @@ void gpxWriterAddPoint(gpxWriter_t *gpx, flightLog_t *log, int64_t time, int32_t
 {
     char negSign[] = "-";
     char noSign[] = "";
+    double hlat, hlon;
 
     if (!gpx)
         return;
 
     if (gpx->state == GPXWRITER_STATE_EMPTY) {
         gpxWriterAddPreamble(gpx);
+
+        if(getHomeCoordinates(log, &hlat, &hlon)){
+            //<wpt lat="48.7784110" lon="9.7839481"><name>Homepoint</name></wpt>
+            fprintf(gpx->file, "<wpt lat=\"%.7f\" lon=\"%.7f\"><name>Homepoint</name></wpt>\n", hlat, hlon);
+        }
 
         fprintf(gpx->file, "<trk><name>Blackbox flight log</name><trkseg>\n");
 
